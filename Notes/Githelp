@@ -1,0 +1,207 @@
+============================================================
+ GIT - GETTING STARTED
+ A working reference: what each command means and when you use it
+============================================================
+
+1. THE MENTAL MODEL
+
+------------------------------------------------------------
+Git tracks the history of a folder. You take snapshots
+("commits") of your files over time, and you can move between
+them, compare them, and sync them to a server.
+
+Four places your work lives:
+
+- Working directory  the actual files you edit on disk.
+- Staging area (the "index")  changes you've marked to go
+    into the next snapshot.
+- Local repository  the committed history in the hidden
+    .git folder.
+- Remote  the copy on a server (GitHub, Azure DevOps) that
+    others can reach.
+
+Everyday loop:  edit  ->  stage  ->  commit  ->  push
+
+1. ONE-TIME SETUP
+
+------------------------------------------------------------
+Run once per machine (global), or inside a repo to override
+just for that repo. Identity is stamped onto every commit.
+
+  git config --global user.name "..."
+      Sets the name attached to your commits.
+  git config --global user.email "..."
+      Sets the email attached to your commits.
+  git config --global init.defaultBranch main
+      Makes new repos start on a branch called main.
+  git config --list
+      Shows all current settings and where each came from.
+
+1. STARTING A REPOSITORY
+
+------------------------------------------------------------
+  git init
+      Turns the current folder into a Git repo (creates .git).
+  git clone <url>
+      Downloads an existing remote repo, with full history,
+      into a new folder.
+  git status
+      Shows what's changed, what's staged, and the current
+      branch. Run it constantly.
+
+Tip: git status is the command you run most. It tells you
+exactly where you are before every other action.
+
+1. THE DAILY LOOP - STAGE, COMMIT, PUSH
+
+------------------------------------------------------------
+  git add <file>
+      Stages one file's changes for the next commit.
+  git add .
+      Stages everything changed in the current folder and below.
+  git restore --staged <file>
+      Unstages a file (keeps edits, removes it from next commit).
+  git commit -m "message"
+      Snapshots everything staged, with a short message.
+  git commit -am "message"
+      Stages already-tracked files and commits in one step
+      (skips new files).
+  git push
+      Uploads your local commits to the remote.
+  git pull
+      Downloads remote commits and merges them into your branch.
+  git fetch
+      Downloads remote commits but does NOT merge - look first.
+
+A typical session:
+  git status                 # what changed?
+  git add Defender/ASR-SpotCheck.ps1
+  git status                 # confirm only what you meant is staged
+  git commit -m "Add ASR spot-check tier filter"
+  git pull                   # bring in anyone else's work first
+  git push                   # send yours up
+
+Write commit messages in the imperative ("Add...", "Fix...",
+"Update...") and describe the why, not just the what. Future-you
+reading git log will thank you.
+
+1. BRANCHING - WORKING WITHOUT BREAKING MAIN
+
+------------------------------------------------------------
+A branch is an independent line of work. Make changes on a
+branch, then merge them back into main when ready. This keeps
+main always-working.
+
+  git branch
+      Lists branches; the current one is marked with *.
+  git switch -c <name>
+      Creates a new branch and moves onto it.
+  git switch <name>
+      Moves to an existing branch.
+  git merge <name>
+      Pulls another branch's commits into the one you're on.
+  git branch -d <name>
+      Deletes a branch once it's merged.
+  git push -u origin <name>
+      Pushes a new branch up and links it for future plain push.
+
+Older guides use git checkout for switching branches - git
+switch is the newer, clearer command that does the same thing.
+
+1. INSPECTING HISTORY AND CHANGES
+
+------------------------------------------------------------
+  git log --oneline
+      Compact one-line-per-commit history.
+  git log --oneline --graph --all
+      Visual branch/merge history across all branches.
+  git diff
+      Shows unstaged changes (working dir vs last commit).
+  git diff --staged
+      Shows what's staged and about to be committed.
+  git show <commit>
+      Shows the full change introduced by one commit.
+  git blame <file>
+      Shows who last changed each line and in which commit.
+
+1. UNDOING THINGS
+
+------------------------------------------------------------
+Safe rule: prefer commands that preserve history over ones
+that rewrite it, especially on anything already pushed.
+
+  git restore <file>
+      Discards unstaged edits (reverts to last commit).
+      Irreversible - the edits are gone.
+  git restore --staged <file>
+      Unstages without losing edits.
+  git commit --amend
+      Rewrites the most recent commit (fix a message or add a
+      forgotten file). Don't amend pushed commits.
+  git revert <commit>
+      Creates a NEW commit that undoes an old one. Safe on
+      shared history.
+  git reset --soft HEAD~1
+      Undoes the last commit but keeps changes staged.
+  git reset --hard HEAD~1
+      Undoes the last commit AND discards its changes.
+      Destructive - use with care.
+
+Rule of thumb: revert is the safe public undo; reset --hard is
+the dangerous private one. Never rewrite history (amend / reset)
+on commits others have already pulled.
+
+1. KEEPING SECRETS OUT (NON-NEGOTIABLE)
+
+------------------------------------------------------------
+Git remembers everything. A credential committed once stays in
+history even after you delete the file - so never commit it in
+the first place.
+
+- Keep a .gitignore listing secret patterns (*.key,*.pem,
+    .env, *.clixml, secrets*.json) so they're never staged.
+- Run a scanner (gitleaks) as a pre-commit hook to block
+    accidental secrets, with a CI scan as a server-side backstop.
+- Always run git status before git commit and confirm nothing
+    sensitive is staged.
+- If a secret does get committed: rotate the credential
+    immediately - removing the file is not enough, because it
+    remains in history until the history is rewritten.
+
+1. QUICK REFERENCE CARD
+
+------------------------------------------------------------
+
+# setup (once)
+
+  git config --global user.name "Name"
+  git config --global user.email "<you@pharo.org>"
+
+# start
+
+  git init                 # new repo here
+  git clone <url>          # copy a remote repo
+
+# daily loop
+
+  git status               # what changed
+  git add <file> | .       # stage
+  git commit -m "msg"      # snapshot
+  git pull                 # get others' work
+  git push                 # send yours up
+
+# branches
+
+  git switch -c <name>     # new branch
+  git switch <name>        # change branch
+  git merge <name>         # merge into current
+
+# inspect
+
+  git log --oneline        # history
+  git diff                 # unstaged changes
+
+# undo
+
+  git restore <file>       # discard edits
+  git revert <commit>      # safe undo (new commit)

@@ -1,0 +1,1 @@
+$s=(Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\CI\Policy' -Name VerifiedAndReputablePolicyState -EA SilentlyContinue).VerifiedAndReputablePolicyState; switch($s){0{'Smart App Control: OFF'}1{'Smart App Control: ON (enforced)'}2{'Smart App Control: EVALUATION mode'}default{'Smart App Control: not available on this device'}}
