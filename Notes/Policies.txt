@@ -1,6 +1,0 @@
-Guide: ISO_27001_AA_Master_ISMS_Manual
-1.ISO_27001_Acceptable_Use_Policy_Update Draft
-2.ISO_27001_Access_Control_Policy_Update Draft
-3.ISO_27001_Backup_and_Disaster_Recovery_Plan_Update Draft
-4.ISO_27001_Incident_Response_Plan_Update Draft
-5.ISO_27001_PatchManagement_Policy_Update Draft
